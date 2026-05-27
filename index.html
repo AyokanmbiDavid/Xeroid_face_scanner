@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Guesser AI - Stable Edition</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
+    
+    <script type="module">
+        import 'https://unpkg.com/@material/web/progress/linear-progress.js?module';
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/3.20.0/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+
+    <style>
+        :root {
+            --chrome-blue: #1a73e8;
+            font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(120% 120% at 50% 0%, #f1f3f4 40%, #e8f0fe 100%);
+        }
+
+        .milky-foam {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        }
+
+        .metallic-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        .metallic-shine::after {
+            content: '';
+            position: absolute;
+            top: -150%; left: -100%; width: 40%; height: 400%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(25deg);
+            animation: rollingShine 4.5s infinite linear;
+        }
+        @keyframes rollingShine {
+            0% { left: -120%; }
+            15% { left: 140%; }
+            100% { left: 140%; }
+        }
+
+        .balloon-physics {
+            background: linear-gradient(135deg, #1a73e8 0%, #0b57d0 100%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+        }
+        .balloon-physics:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 14px 24px rgba(26, 115, 232, 0.4);
+            border-radius: 40px;
+        }
+        .balloon-physics:active:not(:disabled) {
+            transform: translateY(1px) scale(0.97);
+        }
+
+        .laser-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 30;
+        }
+        .liquid-laser {
+            position: absolute;
+            left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, #1a73e8 20%, #00f2fe 50%, #1a73e8 80%, transparent);
+            box-shadow: 0 0 15px #00f2fe, 0 0 30px #1a73e8;
+            animation: sweepScanner 2s infinite ease-in-out;
+        }
+        @keyframes sweepScanner {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-8 items-center justify-start pt-6">
+
+    <header class="w-full max-w-[1000px] milky-foam rounded-[20px] px-6 py-4 flex items-center justify-between mb-4 shadow-sm border border-white/80">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <span class="text-xs font-bold text-gray-800 tracking-wider uppercase">AI Suite Workspace</span>
+        </div>
+        <nav class="flex items-center gap-2">
+            <a href="index.html" class="bg-blue-600 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
+                <i class="lni lni-user text-[10px]"></i> Age Scanner
+            </a>
+            <a href="isSiblings.html" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                <i class="lni lni-users text-[10px]"></i> Sibling Matcher
+            </a>
+        </nav>
+    </header>
+
+    <div id="statusNotification" class="w-full max-w-[1000px] bg-amber-50 text-amber-800 border border-amber-200/60 rounded-[18px] px-6 py-3 text-xs font-medium flex items-center justify-between mb-6 shadow-sm">
+        <span id="statusText" class="flex items-center gap-2">
+            <i class="lni lni-spinner-arrow animate-spin text-sm"></i> Loading AI tool into phone memory cache...
+        </span>
+    </div>
+
+    <main class="w-full max-w-[1000px] flex flex-col lg:flex-row gap-6 items-stretch">
+        <aside class="w-full lg:w-[340px] milky-foam rounded-[28px] p-6 flex flex-col justify-between gap-6 shadow-lg">
+            <div class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-[#1a73e8] to-[#00f2fe] flex items-center justify-center text-xl text-white">
+                        <i class="lni lni-user"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold text-gray-900">Age Guesser AI</h1>
+                        <p class="text-xs text-gray-500">Fast, Cached & Smooth</p>
+                    </div>
+                </div>
+                <hr class="border-gray-200/40" />
+
+                <div class="space-y-2">
+                    <label class="text-[11px] font-bold text-gray-400 block px-1">Step 1</label>
+                    <input type="file" id="photoUpload" accept="image/*" class="hidden" />
+                    <button id="uploadBtn" disabled onclick="document.getElementById('photoUpload').click()" 
+                            class="balloon-physics w-full text-white font-semibold text-sm py-3.5 px-5 rounded-[20px] flex items-center justify-center gap-2">
+                        <i class="lni lni-camera-alt"></i> Choose a Photo
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[11px] font-bold text-gray-400 block px-1">Step 2</label>
+                    <button id="analyzeBtn" disabled 
+                            class="w-full bg-white text-[#1a73e8] border-2 border-[#1a73e8] hover:bg-blue-50/50 font-bold text-sm py-3.5 px-5 rounded-[20px] transition-all duration-300 flex items-center justify-center gap-2">
+                        <i class="lni lni-emoji-smile"></i> Guess My Age!
+                    </button>
+                </div>
+            </div>
+
+            <div id="resultsCard" class="hidden metallic-shine milky-foam rounded-[22px] p-5 border border-blue-100 bg-gradient-to-br from-white to-[#f4f8ff] shadow-md transition-all duration-500">
+                <h4 class="text-[11px] font-extrabold text-[#1a73e8] mb-3 flex items-center gap-1.5">
+                    <i class="lni lni-checkmark-circle"></i> Results
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-baseline border-b border-gray-100 pb-2">
+                        <span class="text-xs text-gray-500">Estimated Age:</span>
+                        <span id="resAge" class="font-black text-gray-900 text-2xl">-</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+                        <span class="text-xs text-gray-500">Gender:</span>
+                        <span id="resGender" class="font-bold text-[#1a73e8] bg-blue-50 px-2.5 py-0.5 rounded-full text-xs capitalize">-</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="flex-1 milky-foam rounded-[28px] p-6 min-h-[360px] lg:min-h-0 flex items-center justify-center relative shadow-lg overflow-hidden bg-white/30">
+            <md-linear-progress id="scannerBar" class="absolute top-0 left-0 w-full z-40 hidden" style="--md-linear-progress-active-indicator-color: #1a73e8;"></md-linear-progress>
+            
+            <div id="laserContainer" class="laser-container hidden">
+                <div class="liquid-laser"></div>
+            </div>
+
+            <div id="placeholder" class="text-center max-w-sm p-4">
+                <div class="w-14 h-14 bg-white/80 text-gray-400 rounded-[20px] flex items-center justify-center text-xl mb-4 mx-auto border border-white">
+                    <i class="lni lni-image"></i>
+                </div>
+                <h2 class="text-base font-bold text-gray-800 mb-1">AI Loading...</h2>
+                <p id="placeholderText" class="text-xs text-gray-500 font-medium">Downloading and storing AI rules locally...</p>
+            </div>
+
+            <div id="imageWrapper" class="hidden relative shadow-2xl rounded-[22px] bg-white border-4 border-white overflow-hidden max-h-full max-w-xs">
+                <img id="faceImage" src="" alt="Target Portrait" class="rounded-[18px] block w-full h-auto" />
+                <canvas id="overlayCanvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-20"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const photoUpload = document.getElementById('photoUpload');
+        const faceImage = document.getElementById('faceImage');
+        const overlayCanvas = document.getElementById('overlayCanvas');
+        const placeholder = document.getElementById('placeholder');
+        const imageWrapper = document.getElementById('imageWrapper');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const scannerBar = document.getElementById('scannerBar');
+        const laserContainer = document.getElementById('laserContainer');
+        const resultsCard = document.getElementById('resultsCard');
+        const resAge = document.getElementById('resAge');
+        const resGender = document.getElementById('resGender');
+
+        const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights/';
+
+        async function initializeNeuralNets() {
+            try {
+                tf.env().set('WEBGL_PACK', true);
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
+                ]);
+                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-green-50 text-green-800 border border-green-200/60 rounded-[18px] px-6 py-3 text-xs font-medium flex items-center justify-between mb-6 shadow-sm";
+                document.getElementById('statusText').innerHTML = `<i class="lni lni-checkmark-circle mr-1 text-sm"></i> Scanner cached and ready!`;
+                document.getElementById('placeholderText').innerText = "Upload a portrait photo to scan.";
+                uploadBtn.disabled = false;
+            } catch (err) {
+                document.getElementById('statusText').innerHTML = `<i class="lni lni-warning mr-1"></i> Check internet connection.`;
+                console.error(err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initializeNeuralNets);
+
+        photoUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                faceImage.src = event.target.result;
+                placeholder.classList.add('hidden');
+                imageWrapper.classList.remove('hidden');
+                analyzeBtn.disabled = false;
+                resultsCard.classList.add('hidden');
+                const ctx = overlayCanvas.getContext('2d');
+                ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        analyzeBtn.addEventListener('click', async () => {
+            analyzeBtn.disabled = true;
+            scannerBar.classList.remove('hidden');
+            laserContainer.classList.remove('hidden');
+            resultsCard.classList.add('hidden');
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(async () => {
+                        try {
+                            overlayCanvas.width = faceImage.clientWidth;
+                            overlayCanvas.height = faceImage.clientHeight;
+                            let detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 });
+                            let detection = await faceapi.detectSingleFace(faceImage, detectorOptions).withFaceLandmarks().withAgeAndGender();
+
+                            if (!detection) {
+                                detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.2 });
+                                detection = await faceapi.detectSingleFace(faceImage, detectorOptions).withFaceLandmarks().withAgeAndGender();
+                            }
+
+                            if (!detection) {
+                                alert("We couldn't see a face clearly. Try another photo with better lighting!");
+                                return;
+                            }
+
+                            resAge.innerText = `${Math.round(detection.age)} Years Old`;
+                            resGender.innerText = detection.gender === 'male' ? 'Male' : 'Female';
+
+                            const dims = faceapi.matchDimensions(overlayCanvas, faceImage, true);
+                            const resizedDetection = faceapi.resizeResults(detection, dims);
+                            const drawBox = new faceapi.draw.DrawBox(resizedDetection.detection.box, { boxColor: '#1a73e8', lineWidth: 3, drawLabel: false });
+                            drawBox.draw(overlayCanvas);
+
+                            resultsCard.classList.remove('hidden');
+                        } catch (error) {
+                            console.error(error);
+                            alert("Error running scanner.");
+                        } finally {
+                            scannerBar.classList.add('hidden');
+                            laserContainer.classList.add('hidden');
+                            analyzeBtn.disabled = false;
+                        }
+                    }, 50);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

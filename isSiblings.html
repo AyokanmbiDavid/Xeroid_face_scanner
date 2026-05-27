@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Matcher & Sibling AI</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
+    
+    <script type="module">
+        import 'https://unpkg.com/@material/web/progress/linear-progress.js?module';
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/3.20.0/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+
+    <style>
+        :root {
+            --chrome-blue: #1a73e8;
+            font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(120% 120% at 50% 0%, #f1f3f4 40%, #e8f0fe 100%);
+        }
+
+        .milky-foam {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        }
+
+        .balloon-physics {
+            background: linear-gradient(135deg, #1a73e8 0%, #0b57d0 100%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
+        }
+        .balloon-physics:hover:not(:disabled) {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 14px 24px rgba(26, 115, 232, 0.4);
+        }
+        .balloon-physics:active:not(:disabled) {
+            transform: translateY(1px) scale(0.97);
+        }
+
+        .laser-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 30;
+        }
+        .liquid-laser {
+            position: absolute;
+            left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, #1a73e8 20%, #00f2fe 50%, #1a73e8 80%, transparent);
+            box-shadow: 0 0 15px #00f2fe, 0 0 30px #1a73e8;
+            animation: sweepScanner 2s infinite ease-in-out;
+        }
+        @keyframes sweepScanner {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col p-4 md:p-8 items-center justify-start pt-6">
+
+    <header class="w-full max-w-[1000px] milky-foam rounded-[20px] px-6 py-4 flex items-center justify-between mb-4 shadow-sm border border-white/80">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <span class="text-xs font-bold text-gray-800 tracking-wider uppercase">AI Suite Workspace</span>
+        </div>
+        <nav class="flex items-center gap-2">
+            <a href="index.html" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+                <i class="lni lni-user text-[10px]"></i> Age Scanner
+            </a>
+            <a href="isSiblings.html" class="bg-blue-600 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
+                <i class="lni lni-users text-[10px]"></i> Sibling Matcher
+            </a>
+        </nav>
+    </header>
+
+    <div id="statusNotification" class="w-full max-w-[1000px] bg-amber-50 text-amber-800 border border-amber-200/60 rounded-[18px] px-6 py-3 text-xs font-medium flex items-center justify-between mb-6 shadow-sm">
+        <span id="statusText" class="flex items-center gap-2">
+            <i class="lni lni-spinner-arrow animate-spin text-sm"></i> Preparing the Face Recognition Matcher...
+        </span>
+    </div>
+
+    <main class="w-full max-w-[1000px] flex flex-col lg:flex-row gap-6 items-stretch">
+        <aside class="w-full lg:w-[340px] milky-foam rounded-[28px] p-6 flex flex-col justify-between gap-6 shadow-lg">
+            <div class="space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-[#1a73e8] to-[#00f2fe] flex items-center justify-center text-xl text-white">
+                        <i class="lni lni-users"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base font-bold text-gray-900 tracking-tight">Relationship AI</h1>
+                        <p class="text-xs text-gray-500">Same Person or Siblings?</p>
+                    </div>
+                </div>
+                <hr class="border-gray-200/40" />
+
+                <div class="space-y-3">
+                    <div>
+                        <input type="file" id="uploadA" accept="image/*" class="hidden" />
+                        <button id="btnA" disabled onclick="document.getElementById('uploadA').click()" class="w-full bg-white text-gray-700 border border-gray-300 text-xs font-semibold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-gray-50">
+                            <i class="lni lni-image"></i> Upload Person 1
+                        </button>
+                    </div>
+                    <div>
+                        <input type="file" id="uploadB" accept="image/*" class="hidden" />
+                        <button id="btnB" disabled onclick="document.getElementById('uploadB').click()" class="w-full bg-white text-gray-700 border border-gray-300 text-xs font-semibold py-2.5 px-4 rounded-xl flex items-center gap-2 hover:bg-gray-50">
+                            <i class="lni lni-image"></i> Upload Person 2
+                        </button>
+                    </div>
+                </div>
+
+                <button id="analyzeBtn" disabled class="balloon-physics w-full text-white font-bold text-sm py-3.5 px-5 rounded-[20px] flex items-center justify-center gap-2">
+                    <i class="lni lni-reload animate-spin hidden" id="spinnerIcon"></i> Compare Faces
+                </button>
+            </div>
+
+            <div id="resultsCard" class="hidden milky-foam rounded-[22px] p-5 border border-blue-100 bg-gradient-to-br from-white to-[#f4f8ff] shadow-md">
+                <h4 class="text-[11px] font-extrabold text-[#1a73e8] uppercase tracking-wider mb-2">Verdict</h4>
+                <div class="space-y-2">
+                    <div class="text-xl font-black text-gray-900" id="resVerdict">Scanning...</div>
+                    <div class="flex justify-between text-xs text-gray-500 border-t border-gray-100 pt-2">
+                        <span>Structural Similarity:</span>
+                        <span id="resMatch" class="font-bold text-gray-900">-</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="flex-1 milky-foam rounded-[28px] p-6 min-h-[360px] lg:min-h-0 flex flex-col md:flex-row gap-4 items-center justify-center relative shadow-lg overflow-hidden bg-white/30">
+            <md-linear-progress id="scannerBar" class="absolute top-0 left-0 w-full z-40 hidden" style="--md-linear-progress-active-indicator-color: #1a73e8;"></md-linear-progress>
+            <div id="laserContainer" class="laser-container hidden"><div class="liquid-laser"></div></div>
+
+            <div id="frameA" class="hidden relative shadow-md rounded-2xl bg-white border-2 border-white overflow-hidden max-w-[200px] flex-1">
+                <img id="imgA" src="" class="w-full h-auto block" />
+            </div>
+
+            <div id="frameB" class="hidden relative shadow-md rounded-2xl bg-white border-2 border-white overflow-hidden max-w-[200px] flex-1">
+                <img id="imgB" src="" class="w-full h-auto block" />
+            </div>
+
+            <div id="placeholderText" class="text-xs text-gray-400 font-medium text-center max-w-xs">
+                Please wait for the AI to cache...
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const uploadA = document.getElementById('uploadA');
+        const uploadB = document.getElementById('uploadB');
+        const imgA = document.getElementById('imgA');
+        const imgB = document.getElementById('imgB');
+        const frameA = document.getElementById('frameA');
+        const frameB = document.getElementById('frameB');
+        const placeholderText = document.getElementById('placeholderText');
+        const btnA = document.getElementById('btnA');
+        const btnB = document.getElementById('btnB');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const spinnerIcon = document.getElementById('spinnerIcon');
+        const scannerBar = document.getElementById('scannerBar');
+        const laserContainer = document.getElementById('laserContainer');
+        const resultsCard = document.getElementById('resultsCard');
+        const resVerdict = document.getElementById('resVerdict');
+        const resMatch = document.getElementById('resMatch');
+
+        const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights/';
+
+        async function loadModels() {
+            try {
+                tf.env().set('WEBGL_PACK', true);
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-green-50 text-green-800 border border-green-200/60 rounded-[18px] px-6 py-3 text-xs font-medium flex items-center justify-between mb-6 shadow-sm";
+                document.getElementById('statusText').innerHTML = `<i class="lni lni-checkmark-circle mr-1 text-sm"></i> Matcher ready! Upload both photos.`;
+                placeholderText.innerText = "Upload two portrait photos to compare their facial geometry.";
+                btnA.disabled = false;
+                btnB.disabled = false;
+            } catch (err) {
+                document.getElementById('statusText').innerText = "Failed loading matching models. Check network.";
+                console.error(err);
+            }
+        }
+        window.addEventListener('DOMContentLoaded', loadModels);
+
+        function setupImageReader(input, imgElement, frameElement, btnElement, labelText) {
+            input.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    imgElement.src = ev.target.result;
+                    frameElement.classList.remove('hidden');
+                    placeholderText.classList.add('hidden');
+                    btnElement.innerText = labelText + " ✓";
+                    if(imgA.src && imgB.src) analyzeBtn.disabled = false;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        setupImageReader(uploadA, imgA, frameA, btnA, "Person 1");
+        setupImageReader(uploadB, imgB, frameB, btnB, "Person 2");
+
+        analyzeBtn.addEventListener('click', () => {
+            analyzeBtn.disabled = true;
+            spinnerIcon.classList.remove('hidden');
+            scannerBar.classList.remove('hidden');
+            laserContainer.classList.remove('hidden');
+            resultsCard.classList.add('hidden');
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(async () => {
+                        try {
+                            const opt = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.25 });
+                            const featureA = await faceapi.detectSingleFace(imgA, opt).withFaceLandmarks().withFaceDescriptor();
+                            const featureB = await faceapi.detectSingleFace(imgB, opt).withFaceLandmarks().withFaceDescriptor();
+
+                            if (!featureA || !featureB) {
+                                alert("Make sure both photos have one clear, well-lit face!");
+                                return;
+                            }
+
+                            const distance = faceapi.euclideanDistance(featureA.descriptor, featureB.descriptor);
+                            const similarity = Math.max(0, Math.min(100, Math.round((1 - distance) * 100)));
+                            resMatch.innerText = `${similarity}% Match`;
+
+                            if (similarity >= 88) {
+                                resVerdict.innerText = "👦 Same Person / Twin";
+                                resVerdict.className = "text-xl font-black text-blue-600";
+                            } else if (similarity >= 62 && similarity < 88) {
+                                resVerdict.innerText = "👥 Highly Likely Siblings";
+                                resVerdict.className = "text-xl font-black text-emerald-600";
+                            } else {
+                                resVerdict.innerText = "❌ Unrelated";
+                                resVerdict.className = "text-xl font-black text-gray-500";
+                            }
+                            resultsCard.classList.remove('hidden');
+                        } catch (err) {
+                            console.error(err);
+                            alert("Something went wrong during facial rendering calculation.");
+                        } finally {
+                            analyzeBtn.disabled = false;
+                            spinnerIcon.classList.add('hidden');
+                            scannerBar.classList.add('hidden');
+                            laserContainer.classList.add('hidden');
+                        }
+                    }, 50);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
