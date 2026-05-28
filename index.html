@@ -3,198 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Age Guesser AI - Stable Edition</title>
-    
+    <title>Age Guesser AI - Material 3 Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
-    
-    <script type="module">
-        import 'https://unpkg.com/@material/web/progress/linear-progress.js?module';
-    </script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/3.20.0/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-
     <style>
-        :root {
-            --chrome-blue: #1a73e8;
-            font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
-        }
-
         body {
-            background: radial-gradient(120% 120% at 50% 0%, #f1f3f4 40%, #e8f0fe 100%);
+            background-color: #f3f4f6;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
-
-        .milky-foam {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(24px) saturate(160%);
-            -webkit-backdrop-filter: blur(24px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        .m3-card {
+            background-color: #ffffff;
+            border-radius: 24px;
+            transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
         }
-
-        .metallic-shine {
-            position: relative;
+        .m3-btn {
+            border-radius: 100px;
+            transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
+        }
+        .m3-btn:hover:not(:disabled) {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            filter: brightness(0.97);
+        }
+        .m3-progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: #e2e8f0;
+            border-radius: 2px;
             overflow: hidden;
         }
-        .metallic-shine::after {
-            content: '';
-            position: absolute;
-            top: -150%; left: -100%; width: 40%; height: 400%;
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 100%);
-            transform: rotate(25deg);
-            animation: rollingShine 4.5s infinite linear;
-        }
-        @keyframes rollingShine {
-            0% { left: -120%; }
-            15% { left: 140%; }
-            100% { left: 140%; }
-        }
-
-        .balloon-physics {
-            background: linear-gradient(135deg, #1a73e8 0%, #0b57d0 100%);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 20px rgba(26, 115, 232, 0.3);
-        }
-        .balloon-physics:hover:not(:disabled) {
-            transform: translateY(-4px) scale(1.03);
-            box-shadow: 0 14px 24px rgba(26, 115, 232, 0.4);
-            border-radius: 40px;
-        }
-        .balloon-physics:active:not(:disabled) {
-            transform: translateY(1px) scale(0.97);
-        }
-
-        .laser-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 30;
-        }
-        .liquid-laser {
-            position: absolute;
-            left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, transparent, #1a73e8 20%, #00f2fe 50%, #1a73e8 80%, transparent);
-            box-shadow: 0 0 15px #00f2fe, 0 0 30px #1a73e8;
-            animation: sweepScanner 2s infinite ease-in-out;
-        }
-        @keyframes sweepScanner {
-            0% { top: 0%; }
-            50% { top: 100%; }
-            100% { top: 0%; }
+        .m3-progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #0061a4;
+            border-radius: 2px;
+            transition: width 300ms cubic-bezier(0.2, 0, 0, 1);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col p-4 md:p-8 items-center justify-start pt-6">
+<body class="min-h-screen flex flex-col p-4 md:p-8 items-center justify-start">
 
-    <header class="w-full max-w-[1000px] milky-foam rounded-[20px] px-6 py-4 flex items-center justify-between mb-4 shadow-sm border border-white/80">
-        <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-            <span class="text-xs font-bold text-gray-800 tracking-wider uppercase">AI Suite Workspace</span>
+    <header class="w-full max-w-[1000px] bg-white rounded-full px-6 py-3 flex items-center justify-between mb-6 shadow-sm">
+        <div class="flex items-center gap-3">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#0061a4]"></span>
+            <span class="text-xs font-semibold text-gray-700 uppercase tracking-widest">Material 3 AI Suite</span>
         </div>
         <nav class="flex items-center gap-2">
-            <a href="index.html" class="bg-blue-600 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all">
-                <i class="lni lni-user text-[10px]"></i> Age Scanner
+            <a href="index.html" class="bg-[#e1e2ec] text-[#191c21] font-bold  hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-full flex items-center gap-1.5 transition-all">
+                <i class="lni lni-user text-xs"></i> Age Scanner
             </a>
-            <a href="isSiblings.html" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition-all">
-                <i class="lni lni-users text-[10px]"></i> Sibling Matcher
+            <a href="isSiblings.html" class="text-xs px-4 py-2.5 rounded-full flex items-center gap-2">
+                <i class="lni lni-users text-xs"></i> Sibling Matcher
             </a>
         </nav>
     </header>
 
-    <div id="statusNotification" class="w-full max-w-[1000px] bg-amber-50 text-amber-800 border border-amber-200/60 rounded-[18px] px-6 py-3 text-xs font-medium flex items-center justify-between mb-6 shadow-sm">
-        <span id="statusText" class="flex items-center gap-2">
-            <i class="lni lni-spinner-arrow animate-spin text-sm"></i> Loading AI tool into phone memory cache...
-        </span>
+    <div id="statusNotification" class="w-full max-w-[1000px] bg-[#ffe082] text-[#291a00] rounded-2xl px-6 py-4 text-xs font-medium mb-6 flex items-center gap-3 shadow-sm">
+        <i id="statusIcon" class="lni lni-spinner-arrow animate-spin text-sm"></i>
+        <span id="statusText">Allocating hardware acceleration models into local device thread pools...</span>
     </div>
 
     <main class="w-full max-w-[1000px] flex flex-col lg:flex-row gap-6 items-stretch">
-        <aside class="w-full lg:w-[340px] milky-foam rounded-[28px] p-6 flex flex-col justify-between gap-6 shadow-lg">
+        
+        <aside class="w-full lg:w-[360px] m3-card p-6 flex flex-col justify-between gap-8 shadow-sm">
             <div class="space-y-6">
-                <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-[#1a73e8] to-[#00f2fe] flex items-center justify-center text-xl text-white">
-                        <i class="lni lni-user"></i>
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0061a4] flex items-center justify-center text-xl text-white shadow-sm">
+                        <i class="lni lni-faceid"></i>
                     </div>
                     <div>
-                        <h1 class="text-base font-bold text-gray-900">Age Guesser AI</h1>
-                        <p class="text-xs text-gray-500">Fast, Cached & Smooth</p>
+                        <h1 class="text-base font-bold text-gray-900 tracking-tight">Biometric Estimation</h1>
+                        <p class="text-xs text-gray-500">Real-time local neural rendering</p>
                     </div>
                 </div>
-                <hr class="border-gray-200/40" />
+                
+                <hr class="border-gray-100" />
 
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-gray-400 block px-1">Step 1</label>
-                    <input type="file" id="photoUpload" accept="image/*" class="hidden" />
-                    <button id="uploadBtn" disabled onclick="document.getElementById('photoUpload').click()" 
-                            class="balloon-physics w-full text-white font-semibold text-sm py-3.5 px-5 rounded-[20px] flex items-center justify-center gap-2">
-                        <i class="lni lni-camera-alt"></i> Choose a Photo
+                <div class="space-y-3">
+                    <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Step 1: Input Matrix</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="file" id="photoUpload" accept="image/*" class="hidden" />
+                        <button id="uploadBtn" disabled onclick="document.getElementById('photoUpload').click()" class="m3-btn bg-gray-100 text-gray-800 font-bold text-xs py-3.5 px-4 flex items-center justify-center gap-2">
+                            <i class="lni lni-upload"></i> Upload File
+                        </button>
+                        <button id="snapBtn" disabled class="m3-btn bg-[#d2e4ff] text-[#001d44] font-bold text-xs py-3.5 px-4 flex items-center justify-center gap-2">
+                            <i class="lni lni-camera"></i> Snap Photo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Step 2: Processing</label>
+                    <button id="analyzeBtn" disabled class="m3-btn w-full bg-[#0061a4] text-white font-bold text-sm py-4 px-6 flex items-center justify-center gap-2 shadow-sm">
+                        <i class="lni lni-control-panel"></i> Compute Metrics
                     </button>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[11px] font-bold text-gray-400 block px-1">Step 2</label>
-                    <button id="analyzeBtn" disabled 
-                            class="w-full bg-white text-[#1a73e8] border-2 border-[#1a73e8] hover:bg-blue-50/50 font-bold text-sm py-3.5 px-5 rounded-[20px] transition-all duration-300 flex items-center justify-center gap-2">
-                        <i class="lni lni-emoji-smile"></i> Guess My Age!
-                    </button>
+                <div id="growingLoader" class="hidden space-y-2 pt-2">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-[#0061a4] px-1">
+                        <span id="loaderMessage">Reading frame buffers...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="m3-progress-container">
+                        <div id="loadingBar" class="m3-progress-bar"></div>
+                    </div>
                 </div>
             </div>
 
-            <div id="resultsCard" class="hidden metallic-shine milky-foam rounded-[22px] p-5 border border-blue-100 bg-gradient-to-br from-white to-[#f4f8ff] shadow-md transition-all duration-500">
-                <h4 class="text-[11px] font-extrabold text-[#1a73e8] mb-3 flex items-center gap-1.5">
-                    <i class="lni lni-checkmark-circle"></i> Results
+            <div id="resultsCard" class="hidden m3-card bg-slate-50 p-5 border border-slate-100">
+                <h4 class="text-[11px] font-bold text-[#0061a4] mb-4 flex items-center gap-2 uppercase tracking-wider">
+                    <i class="lni lni-pie-chart"></i> Biometric Profile
                 </h4>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <div class="flex justify-between items-baseline border-b border-gray-100 pb-2">
-                        <span class="text-xs text-gray-500">Estimated Age:</span>
+                        <span class="text-xs font-medium text-gray-500">Estimated Age:</span>
                         <span id="resAge" class="font-black text-gray-900 text-2xl">-</span>
                     </div>
-                    <div class="flex justify-between items-center border-b border-gray-100 pb-2">
-                        <span class="text-xs text-gray-500">Gender:</span>
-                        <span id="resGender" class="font-bold text-[#1a73e8] bg-blue-50 px-2.5 py-0.5 rounded-full text-xs capitalize">-</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-medium text-gray-500">Gender Variant:</span>
+                        <span id="resGender" class="font-bold text-[#0061a4] bg-[#d2e4ff] px-3 py-1 rounded-full text-xs capitalize">-</span>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <section class="flex-1 milky-foam rounded-[28px] p-6 min-h-[360px] lg:min-h-0 flex items-center justify-center relative shadow-lg overflow-hidden bg-white/30">
-            <md-linear-progress id="scannerBar" class="absolute top-0 left-0 w-full z-40 hidden" style="--md-linear-progress-active-indicator-color: #1a73e8;"></md-linear-progress>
+        <section class="flex-1 m3-card p-6 min-h-[400px] lg:min-h-0 flex items-center justify-center relative shadow-sm overflow-hidden bg-white">
+            <video id="videoStream" autoplay playsinline muted class="hidden rounded-2xl w-full max-w-sm h-auto border border-gray-200 shadow-sm bg-black"></video>
             
-            <div id="laserContainer" class="laser-container hidden">
-                <div class="liquid-laser"></div>
-            </div>
-
             <div id="placeholder" class="text-center max-w-sm p-4">
-                <div class="w-14 h-14 bg-white/80 text-gray-400 rounded-[20px] flex items-center justify-center text-xl mb-4 mx-auto border border-white">
+                <div class="w-16 h-16 bg-slate-50 text-gray-400 rounded-2xl flex items-center justify-center text-xl mb-4 mx-auto">
                     <i class="lni lni-image"></i>
                 </div>
-                <h2 class="text-base font-bold text-gray-800 mb-1">AI Loading...</h2>
-                <p id="placeholderText" class="text-xs text-gray-500 font-medium">Downloading and storing AI rules locally...</p>
+                <h2 class="text-base font-bold text-gray-800 mb-1">Canvas Sandbox Empty</h2>
+                <p id="placeholderText" class="text-xs text-gray-500 font-medium">Mounting engine nodes into device memory storage stacks...</p>
             </div>
-
-            <div id="imageWrapper" class="hidden relative shadow-2xl rounded-[22px] bg-white border-4 border-white overflow-hidden max-h-full max-w-xs">
-                <img id="faceImage" src="" alt="Target Portrait" class="rounded-[18px] block w-full h-auto" />
-                <canvas id="overlayCanvas" class="absolute top-0 left-0 w-full h-full pointer-events-none z-20"></canvas>
+            
+            <div id="imageWrapper" class="hidden relative rounded-2xl bg-slate-50 p-2 overflow-hidden max-h-full max-w-sm">
+                <img id="faceImage" src="" alt="Target Portrait" class="rounded-xl block w-full h-auto" />
+                <canvas id="overlayCanvas" class="absolute top-2 left-2 pointer-events-none z-20"></canvas>
             </div>
         </section>
     </main>
 
     <script>
-        const photoUpload = document.getElementById('photoUpload');
-        const faceImage = document.getElementById('faceImage');
-        const overlayCanvas = document.getElementById('overlayCanvas');
-        const placeholder = document.getElementById('placeholder');
-        const imageWrapper = document.getElementById('imageWrapper');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        const scannerBar = document.getElementById('scannerBar');
-        const laserContainer = document.getElementById('laserContainer');
-        const resultsCard = document.getElementById('resultsCard');
-        const resAge = document.getElementById('resAge');
-        const resGender = document.getElementById('resGender');
+        const photoUpload = document.getElementById('photoUpload'), faceImage = document.getElementById('faceImage'), overlayCanvas = document.getElementById('overlayCanvas');
+        const placeholder = document.getElementById('placeholder'), imageWrapper = document.getElementById('imageWrapper'), videoStream = document.getElementById('videoStream');
+        const uploadBtn = document.getElementById('uploadBtn'), snapBtn = document.getElementById('snapBtn'), analyzeBtn = document.getElementById('analyzeBtn');
+        const resultsCard = document.getElementById('resultsCard'), resAge = document.getElementById('resAge'), resGender = document.getElementById('resGender');
+        const growingLoader = document.getElementById('growingLoader'), loadingBar = document.getElementById('loadingBar'), progressPercent = document.getElementById('progressPercent'), loaderMessage = document.getElementById('loaderMessage');
 
         const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights/';
+        let activeStream = null;
 
         async function initializeNeuralNets() {
             try {
@@ -204,80 +164,141 @@
                     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
                     faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
                 ]);
-                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-green-50 text-green-800 border border-green-200/60 rounded-[18px] px-6 py-3 text-xs font-medium flex items-center justify-between mb-6 shadow-sm";
-                document.getElementById('statusText').innerHTML = `<i class="lni lni-checkmark-circle mr-1 text-sm"></i> Scanner cached and ready!`;
-                document.getElementById('placeholderText').innerText = "Upload a portrait photo to scan.";
-                uploadBtn.disabled = false;
+                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-[#e8f5e9] text-[#2e7d32] rounded-2xl px-6 py-4 text-xs font-medium mb-6 flex items-center gap-3 shadow-sm";
+                document.getElementById('statusIcon').className = "lni lni-checkmark-circle text-sm";
+                document.getElementById('statusText').innerText = "Model dependencies loaded and cached successfully.";
+                document.getElementById('placeholderText').innerText = "Upload an image asset or stream your camera node to start calculations.";
+                uploadBtn.disabled = snapBtn.disabled = false;
             } catch (err) {
-                document.getElementById('statusText').innerHTML = `<i class="lni lni-warning mr-1"></i> Check internet connection.`;
-                console.error(err);
+                document.getElementById('statusText').innerText = "Fault error connecting to neural model distribution network.";
             }
         }
-
         window.addEventListener('DOMContentLoaded', initializeNeuralNets);
 
         photoUpload.addEventListener('change', (e) => {
+            stopCamera();
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = (event) => {
-                faceImage.src = event.target.result;
-                placeholder.classList.add('hidden');
-                imageWrapper.classList.remove('hidden');
-                analyzeBtn.disabled = false;
-                resultsCard.classList.add('hidden');
-                const ctx = overlayCanvas.getContext('2d');
-                ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-            };
+            reader.onload = (event) => showImageSource(event.target.result);
             reader.readAsDataURL(file);
         });
 
-        analyzeBtn.addEventListener('click', async () => {
-            analyzeBtn.disabled = true;
-            scannerBar.classList.remove('hidden');
-            laserContainer.classList.remove('hidden');
-            resultsCard.classList.add('hidden');
-
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(async () => {
-                        try {
-                            overlayCanvas.width = faceImage.clientWidth;
-                            overlayCanvas.height = faceImage.clientHeight;
-                            let detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 });
-                            let detection = await faceapi.detectSingleFace(faceImage, detectorOptions).withFaceLandmarks().withAgeAndGender();
-
-                            if (!detection) {
-                                detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.2 });
-                                detection = await faceapi.detectSingleFace(faceImage, detectorOptions).withFaceLandmarks().withAgeAndGender();
-                            }
-
-                            if (!detection) {
-                                alert("We couldn't see a face clearly. Try another photo with better lighting!");
-                                return;
-                            }
-
-                            resAge.innerText = `${Math.round(detection.age)} Years Old`;
-                            resGender.innerText = detection.gender === 'male' ? 'Male' : 'Female';
-
-                            const dims = faceapi.matchDimensions(overlayCanvas, faceImage, true);
-                            const resizedDetection = faceapi.resizeResults(detection, dims);
-                            const drawBox = new faceapi.draw.DrawBox(resizedDetection.detection.box, { boxColor: '#1a73e8', lineWidth: 3, drawLabel: false });
-                            drawBox.draw(overlayCanvas);
-
-                            resultsCard.classList.remove('hidden');
-                        } catch (error) {
-                            console.error(error);
-                            alert("Error running scanner.");
-                        } finally {
-                            scannerBar.classList.add('hidden');
-                            laserContainer.classList.add('hidden');
-                            analyzeBtn.disabled = false;
-                        }
-                    }, 50);
-                });
-            });
+        snapBtn.addEventListener('click', async () => {
+            if (!activeStream) {
+                try {
+                    // Requests video configuration explicit constraints for optimal performance
+                    activeStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, 
+                        audio: false 
+                    });
+                    
+                    videoStream.srcObject = activeStream;
+                    placeholder.classList.add('hidden'); 
+                    imageWrapper.classList.add('hidden'); 
+                    videoStream.classList.remove('hidden');
+                    
+                    // Makes sure stream frame buffer values render correctly before allowing interactions
+                    videoStream.onloadedmetadata = () => {
+                        videoStream.play();
+                        snapBtn.innerHTML = `<i class="lni lni-camera"></i> Capture`; 
+                        analyzeBtn.disabled = true; 
+                        resultsCard.classList.add('hidden');
+                    };
+                } catch (err) { 
+                    alert("Microdevice stream target rejected or unavailable. Verify device permissions."); 
+                }
+            } else {
+                // Instantiates structural canvas context to grab the exact native layout dimensions of the camera stream
+                const canvas = document.createElement('canvas');
+                canvas.width = videoStream.videoWidth || 640; 
+                canvas.height = videoStream.videoHeight || 480;
+                
+                const ctx = canvas.getContext('2d');
+                // Paints frame directly onto layout canvas memory blocks
+                ctx.drawImage(videoStream, 0, 0, canvas.width, canvas.height);
+                
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+                
+                stopCamera(); 
+                showImageSource(dataUrl);
+                snapBtn.innerHTML = `<i class="lni lni-camera"></i> Snap Photo`;
+            }
         });
+
+        function showImageSource(srcData) {
+            faceImage.src = srcData; 
+            videoStream.classList.add('hidden'); 
+            placeholder.classList.add('hidden');
+            imageWrapper.classList.remove('hidden'); 
+            analyzeBtn.disabled = false; 
+            resultsCard.classList.add('hidden');
+            overlayCanvas.getContext('2d').clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+        }
+
+        function stopCamera() {
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+            }
+            activeStream = null; 
+            videoStream.classList.add('hidden');
+        }
+
+        // True Process Syncing Loading Engine Pipeline
+        analyzeBtn.addEventListener('click', async () => {
+            analyzeBtn.disabled = true; resultsCard.classList.add('hidden');
+            growingLoader.classList.remove('hidden'); updateLoader(15, "Reading input bitmap data...");
+
+            setTimeout(async () => {
+                updateLoader(45, "Isolating tensor regions...");
+                overlayCanvas.width = faceImage.clientWidth; overlayCanvas.height = faceImage.clientHeight;
+                
+                let detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.3 });
+                let detection = await faceapi.detectSingleFace(faceImage, detectorOptions).withFaceLandmarks().withAgeAndGender();
+
+                if (!detection) {
+                    updateLoader(65, "Scaling dimensional boundaries...");
+                    detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.2 });
+                    detection = await faceapi.detectSingleFace(faceImage, detectorOptions).withFaceLandmarks().withAgeAndGender();
+                }
+
+                updateLoader(85, "Calculating regression weights...");
+                
+                setTimeout(() => {
+                    if (!detection) {
+                        growingLoader.classList.add('hidden'); analyzeBtn.disabled = false;
+                        alert("Biometric feature points missing or occluded. Improve direct lighting angles.");
+                        return;
+                    }
+
+                    updateLoader(100, "Sync complete.");
+                    
+                    setTimeout(() => {
+                        resAge.innerText = `${Math.round(detection.age)} Years Old`;
+                        resGender.innerText = detection.gender;
+
+                        const dims = faceapi.matchDimensions(overlayCanvas, faceImage, true);
+                        const resized = faceapi.resizeResults(detection, dims);
+                        
+                        const ctx = overlayCanvas.getContext('2d');
+                        ctx.strokeStyle = '#0061a4';
+                        ctx.lineWidth = 4;
+                        ctx.lineJoin = 'round';
+                        ctx.strokeRect(resized.detection.box.x, resized.detection.box.y, resized.detection.box.width, resized.detection.box.height);
+
+                        growingLoader.classList.add('hidden');
+                        resultsCard.classList.remove('hidden');
+                        analyzeBtn.disabled = false;
+                    }, 200);
+                }, 300);
+            }, 400);
+        });
+
+        function updateLoader(pct, text) {
+            loadingBar.style.width = pct + '%';
+            progressPercent.innerText = pct + '%';
+            loaderMessage.innerText = text;
+        }
     </script>
 </body>
 </html>
