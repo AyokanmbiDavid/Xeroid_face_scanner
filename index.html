@@ -3,105 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Age Guesser AI - Material 3 Edition</title>
+    <title>Age Guesser AI - Android 14 Material You</title>
+    
+    <!-- Tailwind CSS & LineIcons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
+    
+    <!-- TensorFlow & Face-API Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/3.20.0/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-    <style>
-        body {
-            background-color: #f3f4f6;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .m3-card {
-            background-color: #ffffff;
-            border-radius: 24px;
-            transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
-        }
-        .m3-btn {
-            border-radius: 100px;
-            transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
-        }
-        .m3-btn:hover:not(:disabled) {
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            filter: brightness(0.97);
-        }
-        .m3-progress-container {
-            width: 100%;
-            height: 4px;
-            background-color: #e2e8f0;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .m3-progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #0061a4;
-            border-radius: 2px;
-            transition: width 300ms cubic-bezier(0.2, 0, 0, 1);
-        }
-    </style>
+    
+    <!-- Custom Android 14 Material You Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="min-h-screen flex flex-col p-4 md:p-8 items-center justify-start">
 
-    <header class="w-full max-w-[1000px] bg-white rounded-full px-6 py-3 flex items-center justify-between mb-6 shadow-sm">
+    <!-- Android 14 Floating Navigation Pill Header -->
+    <header class="w-full max-w-[1000px] bg-[#1e1f23] border border-white/10 rounded-full px-6 py-3 flex items-center justify-between mb-6 shadow-lg backdrop-blur-md">
         <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#0061a4]"></span>
-            <span class="text-xs font-semibold text-gray-700 uppercase tracking-widest">Material 3 AI Suite</span>
+            <span class="w-3 h-3 rounded-full bg-[#a8c7fa] animate-pulse"></span>
+            <span class="text-xs font-bold text-[#c2e7ff] uppercase tracking-widest">Android 14 M3 AI Suite</span>
         </div>
         <nav class="flex items-center gap-2">
-            <a href="index.html" class="bg-[#e1e2ec] text-[#191c21] font-bold  hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-full flex items-center gap-1.5 transition-all">
+            <a href="index.html" class="bg-[#004a77] text-[#c2e7ff] font-bold text-xs px-4 py-2.5 rounded-full flex items-center gap-1.5 transition-all shadow-sm">
                 <i class="lni lni-user text-xs"></i> Age Scanner
             </a>
-            <a href="isSiblings.html" class="text-xs px-4 py-2.5 rounded-full flex items-center gap-2">
+            <a href="isSiblings.html" class="text-gray-400 hover:text-white font-semibold text-xs px-4 py-2.5 rounded-full flex items-center gap-2 transition-all">
                 <i class="lni lni-users text-xs"></i> Sibling Matcher
             </a>
         </nav>
     </header>
 
-    <div id="statusNotification" class="w-full max-w-[1000px] bg-[#ffe082] text-[#291a00] rounded-2xl px-6 py-4 text-xs font-medium mb-6 flex items-center gap-3 shadow-sm">
-        <i id="statusIcon" class="lni lni-spinner-arrow animate-spin text-sm"></i>
-        <span id="statusText">Allocating hardware acceleration models into local device thread pools...</span>
+    <!-- Status Banner Notification -->
+    <div id="statusNotification" class="w-full max-w-[1000px] bg-[#2e3036] border border-white/10 text-[#f2d53c] rounded-2xl px-6 py-4 text-xs font-semibold mb-6 flex items-center gap-3 shadow-md">
+        <i id="statusIcon" class="lni lni-spinner-arrow animate-spin text-sm text-[#a8c7fa]"></i>
+        <span id="statusText">Allocating hardware acceleration threads into local device cache...</span>
     </div>
 
+    <!-- Core Main Layout Grid -->
     <main class="w-full max-w-[1000px] flex flex-col lg:flex-row gap-6 items-stretch">
         
-        <aside class="w-full lg:w-[360px] m3-card p-6 flex flex-col justify-between gap-8 shadow-sm">
+        <!-- Sidebar Control Panel -->
+        <aside class="w-full lg:w-[380px] m3-card p-6 flex flex-col justify-between gap-8">
             <div class="space-y-6">
+                <!-- Branding Header -->
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-[#0061a4] flex items-center justify-center text-xl text-white shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-[#004a77] text-[#c2e7ff] flex items-center justify-center text-xl shadow-inner border border-white/10">
                         <i class="lni lni-faceid"></i>
                     </div>
                     <div>
-                        <h1 class="text-base font-bold text-gray-900 tracking-tight">Biometric Estimation</h1>
-                        <p class="text-xs text-gray-500">Real-time local neural rendering</p>
+                        <h1 class="text-base font-bold text-white tracking-tight">Biometric Estimation</h1>
+                        <p class="text-xs text-[#c4c6d0]">Real-time local neural rendering</p>
                     </div>
                 </div>
                 
-                <hr class="border-gray-100" />
+                <hr class="border-white/10" />
 
+                <!-- Step 1 Inputs -->
                 <div class="space-y-3">
-                    <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Step 1: Input Matrix</label>
+                    <label class="text-[11px] font-bold text-[#8e919e] block px-1 uppercase tracking-wider">Step 1: Input Matrix</label>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="file" id="photoUpload" accept="image/*" class="hidden" />
-                        <button id="uploadBtn" disabled onclick="document.getElementById('photoUpload').click()" class="m3-btn bg-gray-100 text-gray-800 font-bold text-xs py-3.5 px-4 flex items-center justify-center gap-2">
-                            <i class="lni lni-upload"></i> Upload File
+                        <button id="uploadBtn" disabled onclick="document.getElementById('photoUpload').click()" class="m3-btn m3-btn-secondary text-xs py-3.5 px-4 flex items-center justify-center gap-2">
+                            <i class="lni lni-upload"></i> Upload
                         </button>
-                        <button id="snapBtn" disabled class="m3-btn bg-[#d2e4ff] text-[#001d44] font-bold text-xs py-3.5 px-4 flex items-center justify-center gap-2">
+                        <button id="snapBtn" disabled class="m3-btn m3-btn-primary text-xs py-3.5 px-4 flex items-center justify-center gap-2">
                             <i class="lni lni-camera"></i> Snap Photo
                         </button>
                     </div>
                 </div>
 
+                <!-- Step 2 Processing -->
                 <div class="space-y-3">
-                    <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Step 2: Processing</label>
-                    <button id="analyzeBtn" disabled class="m3-btn w-full bg-[#0061a4] text-white font-bold text-sm py-4 px-6 flex items-center justify-center gap-2 shadow-sm">
+                    <label class="text-[11px] font-bold text-[#8e919e] block px-1 uppercase tracking-wider">Step 2: Processing</label>
+                    <button id="analyzeBtn" disabled class="m3-btn m3-btn-primary w-full text-sm py-4 px-6 flex items-center justify-center gap-2 shadow-lg">
                         <i class="lni lni-control-panel"></i> Compute Metrics
                     </button>
                 </div>
 
+                <!-- Growing Progress Loader -->
                 <div id="growingLoader" class="hidden space-y-2 pt-2">
-                    <div class="flex justify-between items-center text-[11px] font-bold text-[#0061a4] px-1">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-[#a8c7fa] px-1">
                         <span id="loaderMessage">Reading frame buffers...</span>
                         <span id="progressPercent">0%</span>
                     </div>
@@ -111,41 +93,44 @@
                 </div>
             </div>
 
-            <div id="resultsCard" class="hidden m3-card bg-slate-50 p-5 border border-slate-100">
-                <h4 class="text-[11px] font-bold text-[#0061a4] mb-4 flex items-center gap-2 uppercase tracking-wider">
+            <!-- Dynamic Results Card -->
+            <div id="resultsCard" class="hidden bg-[#28292e] border border-white/10 rounded-2xl p-5 shadow-inner">
+                <h4 class="text-[11px] font-bold text-[#a8c7fa] mb-4 flex items-center gap-2 uppercase tracking-wider">
                     <i class="lni lni-pie-chart"></i> Biometric Profile
                 </h4>
                 <div class="space-y-4">
-                    <div class="flex justify-between items-baseline border-b border-gray-100 pb-2">
-                        <span class="text-xs font-medium text-gray-500">Estimated Age:</span>
-                        <span id="resAge" class="font-black text-gray-900 text-2xl">-</span>
+                    <div class="flex justify-between items-baseline border-b border-white/10 pb-2">
+                        <span class="text-xs font-medium text-[#c4c6d0]">Estimated Age:</span>
+                        <span id="resAge" class="font-black text-white text-2xl tracking-tight">-</span>
                     </div>
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-medium text-gray-500">Gender Variant:</span>
-                        <span id="resGender" class="font-bold text-[#0061a4] bg-[#d2e4ff] px-3 py-1 rounded-full text-xs capitalize">-</span>
+                        <span class="text-xs font-medium text-[#c4c6d0]">Gender Variant:</span>
+                        <span id="resGender" class="font-bold text-[#c2e7ff] bg-[#004a77] border border-white/10 px-3 py-1 rounded-full text-xs capitalize">-</span>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <section class="flex-1 m3-card p-6 min-h-[400px] lg:min-h-0 flex items-center justify-center relative shadow-sm overflow-hidden bg-white">
-            <video id="videoStream" autoplay playsinline muted class="hidden rounded-2xl w-full max-w-sm h-auto border border-gray-200 shadow-sm bg-black"></video>
+        <!-- Preview Viewport Canvas Section -->
+        <section class="flex-1 m3-card p-6 min-h-[400px] lg:min-h-0 flex items-center justify-center relative shadow-lg overflow-hidden bg-[#121316]">
+            <video id="videoStream" autoplay playsinline muted class="hidden rounded-2xl w-full max-w-sm h-auto border border-white/10 shadow-lg bg-black"></video>
             
             <div id="placeholder" class="text-center max-w-sm p-4">
-                <div class="w-16 h-16 bg-slate-50 text-gray-400 rounded-2xl flex items-center justify-center text-xl mb-4 mx-auto">
+                <div class="w-16 h-16 bg-[#28292e] border border-white/10 text-[#8e919e] rounded-2xl flex items-center justify-center text-xl mb-4 mx-auto shadow-sm">
                     <i class="lni lni-image"></i>
                 </div>
-                <h2 class="text-base font-bold text-gray-800 mb-1">Canvas Sandbox Empty</h2>
-                <p id="placeholderText" class="text-xs text-gray-500 font-medium">Mounting engine nodes into device memory storage stacks...</p>
+                <h2 class="text-base font-bold text-white mb-1">Canvas Sandbox Empty</h2>
+                <p id="placeholderText" class="text-xs text-[#c4c6d0] font-medium">Mounting engine nodes into device memory storage stacks...</p>
             </div>
             
-            <div id="imageWrapper" class="hidden relative rounded-2xl bg-slate-50 p-2 overflow-hidden max-h-full max-w-sm">
-                <img id="faceImage" src="" alt="Target Portrait" class="rounded-xl block w-full h-auto" />
+            <div id="imageWrapper" class="hidden relative rounded-2xl bg-[#28292e] border border-white/10 p-2 overflow-hidden max-h-full max-w-sm shadow-md">
+                <img id="faceImage" src="" alt="Target Portrait" class="rounded-xl block w-full h-auto object-cover" />
                 <canvas id="overlayCanvas" class="absolute top-2 left-2 pointer-events-none z-20"></canvas>
             </div>
         </section>
     </main>
 
+    <!-- Embedded Processing Script Logic -->
     <script>
         const photoUpload = document.getElementById('photoUpload'), faceImage = document.getElementById('faceImage'), overlayCanvas = document.getElementById('overlayCanvas');
         const placeholder = document.getElementById('placeholder'), imageWrapper = document.getElementById('imageWrapper'), videoStream = document.getElementById('videoStream');
@@ -164,9 +149,9 @@
                     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
                     faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
                 ]);
-                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-[#e8f5e9] text-[#2e7d32] rounded-2xl px-6 py-4 text-xs font-medium mb-6 flex items-center gap-3 shadow-sm";
-                document.getElementById('statusIcon').className = "lni lni-checkmark-circle text-sm";
-                document.getElementById('statusText').innerText = "Model dependencies loaded and cached successfully.";
+                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-[#1b3b22] border border-[#68d388]/30 text-[#c6f6d5] rounded-2xl px-6 py-4 text-xs font-semibold mb-6 flex items-center gap-3 shadow-md";
+                document.getElementById('statusIcon').className = "lni lni-checkmark-circle text-sm text-[#68d388]";
+                document.getElementById('statusText').innerText = "Model dependencies loaded and cached successfully into RAM.";
                 document.getElementById('placeholderText').innerText = "Upload an image asset or stream your camera node to start calculations.";
                 uploadBtn.disabled = snapBtn.disabled = false;
             } catch (err) {
@@ -187,7 +172,6 @@
         snapBtn.addEventListener('click', async () => {
             if (!activeStream) {
                 try {
-                    // Requests video configuration explicit constraints for optimal performance
                     activeStream = await navigator.mediaDevices.getUserMedia({ 
                         video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }, 
                         audio: false 
@@ -198,7 +182,6 @@
                     imageWrapper.classList.add('hidden'); 
                     videoStream.classList.remove('hidden');
                     
-                    // Makes sure stream frame buffer values render correctly before allowing interactions
                     videoStream.onloadedmetadata = () => {
                         videoStream.play();
                         snapBtn.innerHTML = `<i class="lni lni-camera"></i> Capture`; 
@@ -209,15 +192,12 @@
                     alert("Microdevice stream target rejected or unavailable. Verify device permissions."); 
                 }
             } else {
-                // Instantiates structural canvas context to grab the exact native layout dimensions of the camera stream
                 const canvas = document.createElement('canvas');
                 canvas.width = videoStream.videoWidth || 640; 
                 canvas.height = videoStream.videoHeight || 480;
                 
                 const ctx = canvas.getContext('2d');
-                // Paints frame directly onto layout canvas memory blocks
                 ctx.drawImage(videoStream, 0, 0, canvas.width, canvas.height);
-                
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
                 
                 stopCamera(); 
@@ -244,7 +224,6 @@
             videoStream.classList.add('hidden');
         }
 
-        // True Process Syncing Loading Engine Pipeline
         analyzeBtn.addEventListener('click', async () => {
             analyzeBtn.disabled = true; resultsCard.classList.add('hidden');
             growingLoader.classList.remove('hidden'); updateLoader(15, "Reading input bitmap data...");
@@ -274,14 +253,14 @@
                     updateLoader(100, "Sync complete.");
                     
                     setTimeout(() => {
-                        resAge.innerText = `${Math.round(detection.age)} Years Old`;
+                        resAge.innerText = `${Math.round(detection.age)} Years`;
                         resGender.innerText = detection.gender;
 
                         const dims = faceapi.matchDimensions(overlayCanvas, faceImage, true);
                         const resized = faceapi.resizeResults(detection, dims);
                         
                         const ctx = overlayCanvas.getContext('2d');
-                        ctx.strokeStyle = '#0061a4';
+                        ctx.strokeStyle = '#a8c7fa';
                         ctx.lineWidth = 4;
                         ctx.lineJoin = 'round';
                         ctx.strokeRect(resized.detection.box.x, resized.detection.box.y, resized.detection.box.width, resized.detection.box.height);

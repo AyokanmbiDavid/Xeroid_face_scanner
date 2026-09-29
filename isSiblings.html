@@ -3,122 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Matcher & Sibling AI - Material 3 Edition</title>
+    <title>Sibling Matcher AI - Android 14 Material You</title>
     
+    <!-- Tailwind CSS & LineIcons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet">
+    
+    <!-- TensorFlow & Face-API Dependencies -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/3.20.0/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
-
-    <style>
-        body {
-            background-color: #f3f4f6;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-        .m3-card {
-            background-color: #ffffff;
-            border-radius: 24px;
-            transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
-        }
-        .m3-btn {
-            border-radius: 100px;
-            transition: all 200ms cubic-bezier(0.2, 0, 0, 1);
-        }
-        .m3-btn:hover:not(:disabled) {
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-            filter: brightness(0.97);
-        }
-        .m3-progress-container {
-            width: 100%;
-            height: 4px;
-            background-color: #e2e8f0;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .m3-progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #0061a4;
-            border-radius: 2px;
-            transition: width 300ms cubic-bezier(0.2, 0, 0, 1);
-        }
-    </style>
+    
+    <!-- Custom Android 14 Material You Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="min-h-screen flex flex-col p-4 md:p-8 items-center justify-start">
 
-    <header class="w-full max-w-[1000px] bg-white rounded-full px-6 py-3 flex items-center justify-between mb-6 shadow-sm">
+    <!-- Android 14 Floating Navigation Pill Header -->
+    <header class="w-full max-w-[1000px] bg-[#1e1f23] border border-white/10 rounded-full px-6 py-3 flex items-center justify-between mb-6 shadow-lg backdrop-blur-md">
         <div class="flex items-center gap-3">
-            <span class="w-2.5 h-2.5 rounded-full bg-[#0061a4]"></span>
-            <span class="text-xs font-semibold text-gray-700 uppercase tracking-widest">Material 3 AI Suite</span>
+            <span class="w-3 h-3 rounded-full bg-[#a8c7fa] animate-pulse"></span>
+            <span class="text-xs font-bold text-[#c2e7ff] uppercase tracking-widest">Android 14 M3 AI Suite</span>
         </div>
         <nav class="flex items-center gap-2">
-            <a href="index.html" class="text-gray-600 hover:text-blue-600 hover:bg-blue-50 font-semibold text-xs px-4 py-2.5 rounded-full flex items-center gap-1.5 transition-all">
+            <a href="index.html" class="text-gray-400 hover:text-white font-semibold text-xs px-4 py-2.5 rounded-full flex items-center gap-1.5 transition-all">
                 <i class="lni lni-user text-xs"></i> Age Scanner
             </a>
-            <a href="isSiblings.html" class="bg-[#e1e2ec] text-[#191c21] font-bold text-xs px-4 py-2.5 rounded-full flex items-center gap-2">
+            <a href="isSiblings.html" class="bg-[#004a77] text-[#c2e7ff] font-bold text-xs px-4 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-sm">
                 <i class="lni lni-users text-xs"></i> Sibling Matcher
             </a>
         </nav>
     </header>
 
-    <div id="statusNotification" class="w-full max-w-[1000px] bg-[#ffe082] text-[#291a00] rounded-2xl px-6 py-4 text-xs font-medium mb-6 flex items-center gap-3 shadow-sm">
-        <i id="statusIcon" class="lni lni-spinner-arrow animate-spin text-sm"></i>
+    <!-- Status Banner Notification -->
+    <div id="statusNotification" class="w-full max-w-[1000px] bg-[#2e3036] border border-white/10 text-[#f2d53c] rounded-2xl px-6 py-4 text-xs font-semibold mb-6 flex items-center gap-3 shadow-md">
+        <i id="statusIcon" class="lni lni-spinner-arrow animate-spin text-sm text-[#a8c7fa]"></i>
         <span id="statusText">Allocating recognition weights into matrix processing pools...</span>
     </div>
 
+    <!-- Core Main Layout Grid -->
     <main class="w-full max-w-[1000px] flex flex-col lg:flex-row gap-6 items-stretch">
         
-        <aside class="w-full lg:w-[360px] m3-card p-6 flex flex-col justify-between gap-8 shadow-sm">
+        <!-- Sidebar Control Panel -->
+        <aside class="w-full lg:w-[380px] m3-card p-6 flex flex-col justify-between gap-8">
             <div class="space-y-6">
+                <!-- Branding Header -->
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-[#0061a4] flex items-center justify-center text-xl text-white shadow-sm">
+                    <div class="w-12 h-12 rounded-2xl bg-[#004a77] text-[#c2e7ff] flex items-center justify-center text-xl shadow-inner border border-white/10">
                         <i class="lni lni-users"></i>
                     </div>
                     <div>
-                        <h1 class="text-base font-bold text-gray-900 tracking-tight">Relationship AI</h1>
-                        <p class="text-xs text-gray-500">Geometry distance parsing</p>
+                        <h1 class="text-base font-bold text-white tracking-tight">Relationship AI</h1>
+                        <p class="text-xs text-[#c4c6d0]">Geometry distance parsing</p>
                     </div>
                 </div>
                 
-                <hr class="border-gray-100" />
+                <hr class="border-white/10" />
 
+                <!-- Step 1 Inputs -->
                 <div class="space-y-4">
                     <div class="space-y-2">
-                        <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Person 1 Source</label>
+                        <label class="text-[11px] font-bold text-[#8e919e] block px-1 uppercase tracking-wider">Person 1 Source</label>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="file" id="uploadA" accept="image/*" class="hidden" />
-                            <button id="btnUploadA" disabled onclick="document.getElementById('uploadA').click()" class="m3-btn bg-gray-100 text-gray-800 font-bold text-xs py-3 px-2 flex items-center justify-center gap-1">
+                            <button id="btnUploadA" disabled onclick="document.getElementById('uploadA').click()" class="m3-btn m3-btn-secondary text-xs py-3 px-2 flex items-center justify-center gap-1">
                                 <i class="lni lni-upload"></i> Upload
                             </button>
-                            <button id="btnSnapA" disabled class="m3-btn bg-[#d2e4ff] text-[#001d44] font-bold text-xs py-3 px-2 flex items-center justify-center gap-1">
-                                <i class="lni lni-camera"></i> Snap Photo
+                            <button id="btnSnapA" disabled class="m3-btn m3-btn-primary text-xs py-3 px-2 flex items-center justify-center gap-1">
+                                <i class="lni lni-camera"></i> Snap
                             </button>
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Person 2 Source</label>
+                        <label class="text-[11px] font-bold text-[#8e919e] block px-1 uppercase tracking-wider">Person 2 Source</label>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="file" id="uploadB" accept="image/*" class="hidden" />
-                            <button id="btnUploadB" disabled onclick="document.getElementById('uploadB').click()" class="m3-btn bg-gray-100 text-gray-800 font-bold text-xs py-3 px-2 flex items-center justify-center gap-1">
+                            <button id="btnUploadB" disabled onclick="document.getElementById('uploadB').click()" class="m3-btn m3-btn-secondary text-xs py-3 px-2 flex items-center justify-center gap-1">
                                 <i class="lni lni-upload"></i> Upload
                             </button>
-                            <button id="btnSnapB" disabled class="m3-btn bg-[#d2e4ff] text-[#001d44] font-bold text-xs py-3 px-2 flex items-center justify-center gap-1">
-                                <i class="lni lni-camera"></i> Snap Photo
+                            <button id="btnSnapB" disabled class="m3-btn m3-btn-primary text-xs py-3 px-2 flex items-center justify-center gap-1">
+                                <i class="lni lni-camera"></i> Snap
                             </button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Step 2 Processing & Countdown -->
                 <div class="space-y-3">
-                    <label class="text-[11px] font-bold text-gray-400 block px-1 uppercase tracking-wider">Step 2: Analysis</label>
-                    <button id="analyzeBtn" disabled class="m3-btn w-full bg-[#0061a4] text-white font-bold text-sm py-4 px-6 flex items-center justify-center gap-2 shadow-sm">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[11px] font-bold text-[#8e919e] uppercase tracking-wider">Step 2: Analysis</label>
+                        <span id="countdownTimer" class="text-[11px] font-bold text-[#a8c7fa] hidden">Estimated: <span id="timerSeconds">3.0</span>s</span>
+                    </div>
+                    <button id="analyzeBtn" disabled class="m3-btn m3-btn-primary w-full text-sm py-4 px-6 flex items-center justify-center gap-2 shadow-lg">
                         <i class="lni lni-control-panel"></i> Compare Facials
                     </button>
                 </div>
 
+                <!-- Growing Progress Loader -->
                 <div id="growingLoader" class="hidden space-y-2 pt-2">
-                    <div class="flex justify-between items-center text-[11px] font-bold text-[#0061a4] px-1">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-[#a8c7fa] px-1">
                         <span id="loaderMessage">Reading frame buffers...</span>
                         <span id="progressPercent">0%</span>
                     </div>
@@ -128,45 +111,48 @@
                 </div>
             </div>
 
-            <div id="resultsCard" class="hidden m3-card bg-slate-50 p-5 border border-slate-100">
-                <h4 class="text-[11px] font-bold text-[#0061a4] mb-3 flex items-center gap-2 uppercase tracking-wider">
+            <!-- Dynamic Results Card -->
+            <div id="resultsCard" class="hidden bg-[#28292e] border border-white/10 rounded-2xl p-5 shadow-inner">
+                <h4 class="text-[11px] font-bold text-[#a8c7fa] mb-3 flex items-center gap-2 uppercase tracking-wider">
                     <i class="lni lni-pie-chart"></i> Verdict Analysis
                 </h4>
                 <div class="space-y-4">
-                    <div class="text-xl font-black text-gray-900 tracking-tight" id="resVerdict">Comparing...</div>
-                    <div class="flex justify-between text-xs text-gray-500 border-t border-gray-100 pt-3">
+                    <div class="text-xl font-black text-white tracking-tight" id="resVerdict">Comparing...</div>
+                    <div class="flex justify-between text-xs text-[#c4c6d0] border-t border-white/10 pt-3">
                         <span>Structural Similarity:</span>
-                        <span id="resMatch" class="font-bold text-gray-900">-</span>
+                        <span id="resMatch" class="font-bold text-white">-</span>
                     </div>
                 </div>
             </div>
         </aside>
 
-        <section class="flex-1 m3-card p-6 min-h-[400px] lg:min-h-0 flex flex-col sm:flex-row items-center justify-center gap-6 relative shadow-sm overflow-hidden bg-white">
+        <!-- Preview Viewport Canvas Section -->
+        <section class="flex-1 m3-card p-6 min-h-[400px] lg:min-h-0 flex flex-col sm:flex-row items-center justify-center gap-6 relative shadow-lg overflow-hidden bg-[#121316]">
             
-            <video id="videoStream" autoplay playsinline muted class="hidden rounded-2xl w-full max-w-sm h-auto border border-gray-200 shadow-sm bg-black"></video>
+            <video id="videoStream" autoplay playsinline muted class="hidden rounded-2xl w-full max-w-sm h-auto border border-white/10 shadow-lg bg-black"></video>
 
             <div id="placeholderText" class="text-center max-w-sm p-4 absolute">
-                <div class="w-16 h-16 bg-slate-50 text-gray-400 rounded-2xl flex items-center justify-center text-xl mb-4 mx-auto">
+                <div class="w-16 h-16 bg-[#28292e] border border-white/10 text-[#8e919e] rounded-2xl flex items-center justify-center text-xl mb-4 mx-auto shadow-sm">
                     <i class="lni lni-users"></i>
                 </div>
-                <h2 class="text-base font-bold text-gray-800 mb-1">Canvas Sandbox Empty</h2>
-                <p id="placeholderSubtext" class="text-xs text-gray-500 font-medium">Mounting baseline engine layers into device RAM frameworks...</p>
+                <h2 class="text-base font-bold text-white mb-1">Canvas Sandbox Empty</h2>
+                <p id="placeholderSubtext" class="text-xs text-[#c4c6d0] font-medium">Mounting baseline engine layers into device RAM frameworks...</p>
             </div>
             
-            <div id="frameA" class="hidden relative rounded-2xl bg-slate-50 p-2 overflow-hidden max-w-[200px] flex-1 border border-slate-100 shadow-sm">
-                <span class="absolute top-4 left-4 z-30 bg-black/60 text-white font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full backdrop-blur-md">P1 Matrix</span>
-                <img id="imgA" src="" alt="Target 1" class="rounded-xl block w-full h-auto" />
+            <div id="frameA" class="hidden relative rounded-2xl bg-[#28292e] border border-white/10 p-2 overflow-hidden max-w-[200px] flex-1 shadow-md">
+                <span class="absolute top-4 left-4 z-30 bg-black/70 text-[#c2e7ff] font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full backdrop-blur-md border border-white/10">P1 Matrix</span>
+                <img id="imgA" src="" alt="Target 1" class="rounded-xl block w-full h-auto object-cover" />
             </div>
 
-            <div id="frameB" class="hidden relative rounded-2xl bg-slate-50 p-2 overflow-hidden max-w-[200px] flex-1 border border-slate-100 shadow-sm">
-                <span class="absolute top-4 left-4 z-30 bg-black/60 text-white font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full backdrop-blur-md">P2 Matrix</span>
-                <img id="imgB" src="" alt="Target 2" class="rounded-xl block w-full h-auto" />
+            <div id="frameB" class="hidden relative rounded-2xl bg-[#28292e] border border-white/10 p-2 overflow-hidden max-w-[200px] flex-1 shadow-md">
+                <span class="absolute top-4 left-4 z-30 bg-black/70 text-[#c2e7ff] font-bold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full backdrop-blur-md border border-white/10">P2 Matrix</span>
+                <img id="imgB" src="" alt="Target 2" class="rounded-xl block w-full h-auto object-cover" />
             </div>
 
         </section>
     </main>
 
+    <!-- Embedded Processing Script Logic with Countdown -->
     <script>
         const uploadA = document.getElementById('uploadA'), uploadB = document.getElementById('uploadB');
         const imgA = document.getElementById('imgA'), imgB = document.getElementById('imgB');
@@ -177,6 +163,7 @@
         const videoStream = document.getElementById('videoStream'), resultsCard = document.getElementById('resultsCard');
         const resVerdict = document.getElementById('resVerdict'), resMatch = document.getElementById('resMatch');
         const growingLoader = document.getElementById('growingLoader'), loadingBar = document.getElementById('loadingBar'), progressPercent = document.getElementById('progressPercent'), loaderMessage = document.getElementById('loaderMessage');
+        const countdownTimer = document.getElementById('countdownTimer'), timerSeconds = document.getElementById('timerSeconds');
 
         const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights/';
         let activeStream = null;
@@ -190,13 +177,13 @@
                     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
                     faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
                 ]);
-                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-[#e8f5e9] text-[#2e7d32] rounded-2xl px-6 py-4 text-xs font-medium mb-6 flex items-center gap-3 shadow-sm";
-                document.getElementById('statusIcon').className = "lni lni-checkmark-circle text-sm";
-                document.getElementById('statusText').innerText = "Model vector dependencies cached successfully.";
+                document.getElementById('statusNotification').className = "w-full max-w-[1000px] bg-[#1b3b22] border border-[#68d388]/30 text-[#c6f6d5] rounded-2xl px-6 py-4 text-xs font-semibold mb-6 flex items-center gap-3 shadow-md";
+                document.getElementById('statusIcon').className = "lni lni-checkmark-circle text-sm text-[#68d388]";
+                document.getElementById('statusText').innerText = "Model vector dependencies cached successfully into local memory.";
                 placeholderSubtext.innerText = "Upload or snap both source photos to run structural calculations.";
                 btnUploadA.disabled = btnUploadB.disabled = btnSnapA.disabled = btnSnapB.disabled = false;
             } catch (err) {
-                document.getElementById('statusText').innerText = "Fault connecting to neural weight storage.";
+                document.getElementById('statusText').innerText = "Fault connecting to neural weight storage repository.";
             }
         }
         window.addEventListener('DOMContentLoaded', loadModels);
@@ -263,11 +250,11 @@
                 if (currentTargetNode === 'A') {
                     imgA.src = dataUrl;
                     frameA.classList.remove('hidden');
-                    btnSnapA.innerHTML = `<i class="lni lni-camera"></i> Snap Photo`;
+                    btnSnapA.innerHTML = `<i class="lni lni-camera"></i> Snap`;
                 } else {
                     imgB.src = dataUrl;
                     frameB.classList.remove('hidden');
-                    btnSnapB.innerHTML = `<i class="lni lni-camera"></i> Snap Photo`;
+                    btnSnapB.innerHTML = `<i class="lni lni-camera"></i> Snap`;
                 }
 
                 if (imgA.getAttribute('src') !== "") frameA.classList.remove('hidden');
@@ -283,14 +270,27 @@
             }
             activeStream = null;
             videoStream.classList.add('hidden');
-            btnSnapA.innerHTML = `<i class="lni lni-camera"></i> Snap Photo`;
-            btnSnapB.innerHTML = `<i class="lni lni-camera"></i> Snap Photo`;
+            btnSnapA.innerHTML = `<i class="lni lni-camera"></i> Snap`;
+            btnSnapB.innerHTML = `<i class="lni lni-camera"></i> Snap`;
         }
 
+        // Processing Pipeline with Live Countdown Simulation
         analyzeBtn.addEventListener('click', () => {
             analyzeBtn.disabled = true;
             resultsCard.classList.add('hidden');
             growingLoader.classList.remove('hidden');
+            
+            // Start Countdown Timer UI
+            countdownTimer.classList.remove('hidden');
+            let timeLeft = 3.0;
+            timerSeconds.innerText = timeLeft.toFixed(1);
+            
+            const countdownInterval = setInterval(() => {
+                timeLeft = Math.max(0, timeLeft - 0.1);
+                timerSeconds.innerText = timeLeft.toFixed(1);
+                if (timeLeft <= 0) clearInterval(countdownInterval);
+            }, 100);
+
             updateLoader(15, "Decoding source image elements...");
 
             setTimeout(async () => {
@@ -306,6 +306,9 @@
                     updateLoader(90, "Evaluating descriptor distance algorithms...");
 
                     setTimeout(() => {
+                        clearInterval(countdownInterval);
+                        countdownTimer.classList.add('hidden');
+
                         if (!featureA || !featureB) {
                             growingLoader.classList.add('hidden');
                             analyzeBtn.disabled = false;
@@ -322,13 +325,13 @@
 
                             if (similarity >= 86) {
                                 resVerdict.innerText = "👦 Identity Clone / Twin";
-                                resVerdict.className = "text-xl font-black text-[#0061a4]";
+                                resVerdict.className = "text-xl font-black text-[#a8c7fa]";
                             } else if (similarity >= 60 && similarity < 86) {
                                 resVerdict.innerText = "👥 Sibling Match Probable";
-                                resVerdict.className = "text-xl font-black text-[#2e7d32]";
+                                resVerdict.className = "text-xl font-black text-[#68d388]";
                             } else {
                                 resVerdict.innerText = "❌ No Core Relation Found";
-                                resVerdict.className = "text-xl font-black text-gray-500";
+                                resVerdict.className = "text-xl font-black text-[#8e919e]";
                             }
                             
                             growingLoader.classList.add('hidden');
@@ -338,6 +341,8 @@
                     }, 400);
 
                 } catch (err) {
+                    clearInterval(countdownInterval);
+                    countdownTimer.classList.add('hidden');
                     growingLoader.classList.add('hidden');
                     analyzeBtn.disabled = false;
                     alert("A hardware configuration fault hit the facial comparison pipeline.");
